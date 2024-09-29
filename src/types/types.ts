@@ -1,4 +1,4 @@
-import type { HTMLPasteEventDetail } from '@editorjs/editorjs';
+import type { BlockAPI, HTMLPasteEventDetail } from '@editorjs/editorjs';
 
 /**
  * Represents options for uploading, including a function to handle previewing.
@@ -159,12 +159,12 @@ export interface ImageConfig {
     /**
      * Method to upload an image by file.
      */
-    uploadByFile?: (file: Blob) => Promise<UploadResponseFormat>;
+    uploadByFile?: (file: Blob, block: BlockAPI) => Promise<UploadResponseFormat>;
 
     /**
      * Method to upload an image by URL.
      */
-    uploadByUrl?: (url: string) => Promise<UploadResponseFormat>;
+    uploadByUrl?: (url: string, block: BlockAPI) => Promise<UploadResponseFormat>;
   };
 
   /**

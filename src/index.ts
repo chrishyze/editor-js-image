@@ -112,6 +112,7 @@ export default class ImageTool implements BlockTool {
      * Module for file uploading
      */
     this.uploader = new Uploader({
+      block: this.block,
       config: this.config,
       onUpload: (response: UploadResponseFormat) => this.onUpload(response),
       onError: (error: string) => this.uploadingFailed(error),

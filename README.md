@@ -15,6 +15,10 @@ Image Block for the [Editor.js](https://editorjs.io).
 - Allows adding a border, and a background
 - Allows stretching an image to the container's full-width
 
+**✨New feature of this fork:**
+
+- Add `BlockAPI` param to the custom uploading methods, see [Providing custom uploading methods](https://github.com/chrishyze/editor-js-image?tab=readme-ov-file#providing-custom-uploading-methods) bellow.
+
 **Notes**
 
 This Tool requires server-side implementation for the file uploading. See [backend response format](#server-format) for more details.
@@ -24,19 +28,11 @@ This Tool is also capable of uploading & displaying video files using the `<vide
 
 ## Installation
 
-Get the package
+Currently you can load this perticular fork from JsDelivr CDN:
 
-```shell
-yarn add @editorjs/image
+```html
+<script src="https://cdn.jsdelivr.net/gh/chrishyze/editor-js-image/dist/image.umd.js"></script>
 ```
-
-Include module at your application
-
-```javascript
-import ImageTool from '@editorjs/image';
-```
-
-Optionally, you can load this tool from [JsDelivr CDN](https://cdn.jsdelivr.net/npm/@editorjs/image@latest)
 
 ## Usage
 
@@ -218,13 +214,14 @@ Both methods must return a Promise that resolves with response in a format that 
 
 | Method         | Arguments | Return value | Description |
 | -------------- | --------- | -------------| ------------|
-| uploadByFile   | `File`    | `{Promise.<{success, file: {url}}>}` | Upload file to the server and return an uploaded image data |
-| uploadByUrl    | `string`  | `{Promise.<{success, file: {url}}>}` | Send URL-string to the server, that should load image by this URL and return an uploaded image data |
+| uploadByFile   | `File`, `BlockAPI`    | `{Promise.<{success, file: {url}}>}` | Upload file to the server and return an uploaded image data |
+| uploadByUrl    | `string`, `BlockAPI`  | `{Promise.<{success, file: {url}}>}` | Send URL-string to the server, that should load image by this URL and return an uploaded image data |
 
 Example:
 
 ```js
 import ImageTool from '@editorjs/image';
+import type { BlockAPI } from '@editorjs/editorjs';
 
 var editor = EditorJS({
   ...
@@ -241,9 +238,10 @@ var editor = EditorJS({
           /**
            * Upload file to the server and return an uploaded image data
            * @param {File} file - file selected from the device or pasted by drag-n-drop
+           * @param {BlockAPI} block - the block API
            * @return {Promise.<{success, file: {url}}>}
            */
-          uploadByFile(file){
+          uploadByFile(file, block){
             // your own uploading logic here
             return MyAjax.upload(file).then(() => {
               return {
@@ -259,9 +257,10 @@ var editor = EditorJS({
           /**
            * Send URL-string to the server. Backend should load image by this URL and return an uploaded image data
            * @param {string} url - pasted image URL
+           * @param {BlockAPI} block - the block API
            * @return {Promise.<{success, file: {url}}>}
            */
-          uploadByUrl(url){
+          uploadByUrl(url, block){
             // your ajax request for uploading
             return MyAjax.upload(file).then(() => {
               return {

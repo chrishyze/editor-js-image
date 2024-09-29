@@ -3,11 +3,17 @@ import type { AjaxResponse } from '@codexteam/ajax';
 import isPromise from './utils/isPromise';
 import type { UploadOptions } from './types/types';
 import type { UploadResponseFormat, ImageConfig } from './types/types';
+import type { BlockAPI } from '@editorjs/editorjs';
 
 /**
  * Params interface for Uploader constructor
  */
 interface UploaderParams {
+  /**
+   * Editor.js block API.
+   */
+  block: BlockAPI;
+
   /**
    * Configuration for the uploader
    */
@@ -35,16 +41,19 @@ interface UploaderParams {
  *  3. Upload by pasting file from Clipboard or by Drag'n'Drop
  */
 export default class Uploader {
+  private block: BlockAPI;
   private config: ImageConfig;
   private onUpload: (response: UploadResponseFormat) => void;
   private onError: (error: string) => void;
   /**
    * @param params - uploader module params
+   * @param params.block - the block API
    * @param params.config - image tool config
    * @param params.onUpload - one callback for all uploading (file, url, d-n-d, pasting)
    * @param params.onError - callback for uploading errors
    */
-  constructor({ config, onUpload, onError }: UploaderParams) {
+  constructor({ block, config, onUpload, onError }: UploaderParams) {
+    this.block = block;
     this.config = config;
     this.onUpload = onUpload;
     this.onError = onError;
@@ -78,7 +87,7 @@ export default class Uploader {
       upload = ajax.selectFiles({ accept: this.config.types ?? 'image/*' }).then((files: File[]) => {
         preparePreview(files[0]);
 
-        const customUpload = uploadByFile(files[0]);
+        const customUpload = uploadByFile(files[0], this.block);
 
         if (!isPromise(customUpload)) {
           console.warn('Custom uploader method uploadByFile should return a Promise');
@@ -120,7 +129,7 @@ export default class Uploader {
      * Custom uploading
      */
     if (this.config.uploader && typeof this.config.uploader.uploadByUrl === 'function') {
-      upload = this.config.uploader.uploadByUrl(url);
+      upload = this.config.uploader.uploadByUrl(url, this.block);
 
       if (!isPromise(upload)) {
         console.warn('Custom uploader method uploadByUrl should return a Promise');
